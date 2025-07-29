@@ -5,7 +5,6 @@ import (
 	"github.com/leninner/order-service/internal/domain/application-service/mapper"
 	repository "github.com/leninner/order-service/internal/domain/application-service/ports/output/repository"
 	"github.com/leninner/order-service/internal/domain/core/exception"
-	"github.com/leninner/order-service/internal/domain/core/valueobject"
 )
 
 type OrderTrackCommandHandler struct {
@@ -21,7 +20,7 @@ func NewOrderTrackCommandHandler(
 }
 
 func (h *OrderTrackCommandHandler) Handle(command track.TrackOrderQuery) (*track.TrackOrderResponse, error) {
-	order, err := h.orderRepository.FindByTrackingID(valueobject.TrackingIDFromUUID(command.OrderTrackingID))
+	order, err := h.orderRepository.FindByTrackingID(command.OrderTrackingID)
 	if err != nil {
 		return nil, exception.NewOrderDomainException("order with tracking id " + command.OrderTrackingID.String() + " not found")
 	}

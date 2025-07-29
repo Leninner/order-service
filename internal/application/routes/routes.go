@@ -5,7 +5,9 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/leninner/order-service/internal/application/rest"
-	"github.com/leninner/order-service/internal/dataaccess/repository"
+	customerAdapter "github.com/leninner/order-service/internal/dataaccess/customer/adapter"
+	orderAdapter "github.com/leninner/order-service/internal/dataaccess/order/adapter"
+	restaurantAdapter "github.com/leninner/order-service/internal/dataaccess/restaurant/adapter"
 	applicationservice "github.com/leninner/order-service/internal/domain/application-service"
 	"github.com/leninner/order-service/internal/domain/application-service/mapper"
 	"github.com/leninner/order-service/internal/domain/core"
@@ -27,9 +29,10 @@ func Routes(app *config.Application) http.Handler {
 		panic(err)
 	}
 
-	orderRepository := repository.NewOrderRepositoryImpl()
-	customerRepository := repository.NewCustomerRepositoryImpl()
-	restaurantRepository := repository.NewRestaurantRepositoryImpl()
+	orderRepository := orderAdapter.NewOrderRepositoryImpl(app.DataSource)
+	customerRepository := customerAdapter.NewCustomerRepositoryImpl(app.DataSource)
+	restaurantRepository := restaurantAdapter.NewRestaurantRepositoryImpl(app.DataSource)
+
 	orderDataMapper := mapper.NewOrderDataMapper()
 	orderDomainService := core.NewOrderDomainServiceImpl(loggerInstance)
 	orderCreateHelper := applicationservice.NewOrderCreateHelper(

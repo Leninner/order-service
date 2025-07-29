@@ -88,8 +88,9 @@ func (h *OrderCreateHelper) checkCustomer(customerID *uuid.UUID) error {
 
 func (h *OrderCreateHelper) checkRestaurant(command *create.CreateOrderCommand) (*entity.Restaurant, error) {
 	restaurantID := sharedVO.NewRestaurantIDFromUUID(command.RestaurantID)
+	restaurant := entity.NewRestaurantBuilder().WithID(&restaurantID).Build()
 
-	restaurantInformation, err := h.restaurantRepository.FindInformation(restaurantID)
+	restaurantInformation, err := h.restaurantRepository.FindInformation(*restaurant)
 	if err != nil {
 		return nil, exception.NewOrderDomainException("restaurant with id " + command.RestaurantID.String() + " not found")
 	}
