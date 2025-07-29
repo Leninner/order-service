@@ -14,10 +14,10 @@ type OrderTrackCommandHandler struct {
 }
 
 func NewOrderTrackCommandHandler(
-	orderDataMapper mapper.OrderDataMapper,
+	orderDataMapper *mapper.OrderDataMapper,
 	orderRepository repository.OrderRepository,
 ) *OrderTrackCommandHandler {
-	return &OrderTrackCommandHandler{orderDataMapper: orderDataMapper, orderRepository: orderRepository}
+	return &OrderTrackCommandHandler{orderDataMapper: *orderDataMapper, orderRepository: orderRepository}
 }
 
 func (h *OrderTrackCommandHandler) Handle(command track.TrackOrderQuery) (*track.TrackOrderResponse, error) {

@@ -8,13 +8,13 @@ import (
 
 type OrderCreateCommandHandler struct {
 	orderCreateHelper                          *OrderCreateHelper
-	orderDataMapper                            mapper.OrderDataMapper
+	orderDataMapper                            *mapper.OrderDataMapper
 	orderCreatedPaymentRequestMessagePublisher payment.OrderCreatedPaymentRequestMessagePublisher
 }
 
 func NewOrderCreateCommandHandler(
 	orderCreateHelper *OrderCreateHelper,
-	orderDataMapper mapper.OrderDataMapper,
+	orderDataMapper *mapper.OrderDataMapper,
 	orderCreatedPaymentRequestMessagePublisher payment.OrderCreatedPaymentRequestMessagePublisher,
 ) *OrderCreateCommandHandler {
 	return &OrderCreateCommandHandler{
@@ -24,9 +24,10 @@ func NewOrderCreateCommandHandler(
 	}
 }
 
-func (h *OrderCreateCommandHandler) Handle(command create.CreateOrderCommand) (*create.CreateOrderResponse, error) {
-
-
+func (h *OrderCreateCommandHandler) Handle(command create.CreateOrderCommand) (
+	*create.CreateOrderResponse,
+	error,
+) {
 	orderCreatedEvent, err := h.orderCreateHelper.PersistOrder(command)
 	if err != nil {
 		return nil, err

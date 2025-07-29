@@ -12,18 +12,18 @@ import (
 )
 
 type OrderController struct {
-	orderService *service.OrderApplicationService
+	orderService service.OrderApplicationService
 }
 
-func NewOrderController(orderService *service.OrderApplicationService) *OrderController {
+func NewOrderController(orderService service.OrderApplicationService) *OrderController {
 	return &OrderController{orderService: orderService}
 }
 
 func (c *OrderController) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		CustomerID   *uuid.UUID   `json:"customerId" validate:"required"`
-		RestaurantID *uuid.UUID   `json:"restaurantId" validate:"required"`
-		Price        *float64     `json:"price" validate:"required,gt=0"`
+		CustomerID   *uuid.UUID          `json:"customerId" validate:"required"`
+		RestaurantID *uuid.UUID          `json:"restaurantId" validate:"required"`
+		Price        *float64            `json:"price" validate:"required,gt=0"`
 		Items        []create.OrderItem  `json:"items" validate:"required,min=1"`
 		Address      create.OrderAddress `json:"address" validate:"required"`
 	}
@@ -37,31 +37,31 @@ func (c *OrderController) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	v := validator.New()
 
 	items := []create.OrderItem{}
-	
+
 	for _, item := range input.Items {
 		itemToCreate := create.OrderItem{
 			ProductID: item.ProductID,
-			Quantity: item.Quantity,
-			Price: item.Price,
+			Quantity:  item.Quantity,
+			Price:     item.Price,
 		}
 
 		items = append(items, itemToCreate)
 	}
 
 	address := create.OrderAddress{
-		City: input.Address.City,
-		State: input.Address.State,
+		City:       input.Address.City,
+		State:      input.Address.State,
 		PostalCode: input.Address.PostalCode,
-		Country: input.Address.Country,
-		Street: input.Address.Street,
+		Country:    input.Address.Country,
+		Street:     input.Address.Street,
 	}
 
 	command := &create.CreateOrderCommand{
-		CustomerID: input.CustomerID,
+		CustomerID:   input.CustomerID,
 		RestaurantID: input.RestaurantID,
-		Price: input.Price,
-		Items: items,
-		Address: address,
+		Price:        input.Price,
+		Items:        items,
+		Address:      address,
 	}
 
 	if create.ValidateOrderCommand(v, command); !v.Valid() {
@@ -69,5 +69,11 @@ func (c *OrderController) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"order": command}, nil)
+	createOrderResponse, err := c.orderService.CreateOrder(*command)
+	if err != nil {
+		exception.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"order": createOrderResponse}, nil)
 }

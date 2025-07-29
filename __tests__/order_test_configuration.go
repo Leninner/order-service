@@ -76,8 +76,7 @@ func (m *MockRestaurantRepository) SetRestaurantActive(restaurantID string, acti
 	m.activeRestaurants[restaurantID] = active
 }
 
-func (m *MockRestaurantRepository) FindInformation(restaurant entity.Restaurant) (*entity.Restaurant, error) {
-	restaurantID := restaurant.GetID()
+func (m *MockRestaurantRepository) FindInformation(restaurantID sharedVO.RestaurantID) (*entity.Restaurant, error) {
 	restaurantIDStr := restaurantID.GetValue().String()
 	
 	productID := sharedVO.NewProductID()
@@ -94,7 +93,7 @@ func (m *MockRestaurantRepository) FindInformation(restaurant entity.Restaurant)
 	}
 	
 	return entity.NewRestaurantBuilder().
-		WithID(restaurantID).
+		WithID(&restaurantID).
 		WithProducts([]entity.Product{*product}).
 		WithActiveStatus(active).
 		Build(), nil

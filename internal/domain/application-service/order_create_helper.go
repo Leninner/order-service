@@ -9,6 +9,7 @@ import (
 	"github.com/leninner/order-service/internal/domain/core/entity"
 	"github.com/leninner/order-service/internal/domain/core/event"
 	"github.com/leninner/order-service/internal/domain/core/exception"
+	sharedVO "github.com/leninner/shared/domain/valueobject"
 	"github.com/leninner/shared/logger"
 	"go.uber.org/zap"
 )
@@ -86,12 +87,9 @@ func (h *OrderCreateHelper) checkCustomer(customerID *uuid.UUID) error {
 }
 
 func (h *OrderCreateHelper) checkRestaurant(command *create.CreateOrderCommand) (*entity.Restaurant, error) {
-	restaurant, err := h.orderDataMapper.CreateOrderCommandToRestaurant(command)
-	if err != nil {
-		return nil, err
-	}
+	restaurantID := sharedVO.NewRestaurantIDFromUUID(command.RestaurantID)
 
-	restaurantInformation, err := h.restaurantRepository.FindInformation(*restaurant)
+	restaurantInformation, err := h.restaurantRepository.FindInformation(restaurantID)
 	if err != nil {
 		return nil, exception.NewOrderDomainException("restaurant with id " + command.RestaurantID.String() + " not found")
 	}
