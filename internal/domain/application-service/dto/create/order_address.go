@@ -12,10 +12,10 @@ type OrderAddress struct {
 	Country    *string `json:"country" validate:"required"`
 }
 
-func ValidateOrderAddress(v *validator.Validator, addr *OrderAddress) {
-	v.Check(addr.Street != nil, "street", "street is required")
-	v.Check(addr.City != nil, "city", "city is required")
-	v.Check(addr.State != nil, "state", "state is required")
-	v.Check(addr.PostalCode != nil, "postalCode", "postalCode is required")
-	v.Check(addr.Country != nil, "country", "country is required")
+func ValidateOrderAddress(env *validator.ValidationEnvelope, addr *OrderAddress) {
+	env.Check(addr.Street != nil, "street", "street is required")
+	env.Check(addr.City != nil, "city", "city is required")
+	env.Check(addr.State != nil, "state", "state is required")
+	env.Check(addr.PostalCode != nil, "postalCode", "postalCode is required")
+	env.Check(addr.Country != nil, "country", "country is required")
 }

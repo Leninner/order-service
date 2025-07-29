@@ -59,9 +59,11 @@ func ValidateOrderCommand(v *validator.Validator, command *CreateOrderCommand) {
 	v.Check(command.Price != nil && *command.Price > 0, "price", "price must be greater than 0")
 	v.Check(len(command.Items) > 0, "items", "items list cannot be empty")
 
-	for _, item := range command.Items {
-		ValidateOrderItem(v, &item)
+	for i, item := range command.Items {
+		itemEnv := v.ArrayEnvelope("items", i)
+		ValidateOrderItem(itemEnv, &item)
 	}
 
-	ValidateOrderAddress(v, &command.Address)
+	addressEnv := v.Envelope("address")
+	ValidateOrderAddress(addressEnv, &command.Address)
 }

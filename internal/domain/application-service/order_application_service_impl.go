@@ -11,7 +11,7 @@ type OrderApplicationServiceImpl struct {
 	orderTrackCommandHandler  OrderTrackCommandHandler
 }
 
-func New(
+func NewOrderApplicationService(
 	orderCreateCommandHandler OrderCreateCommandHandler,
 	orderTrackCommandHandler OrderTrackCommandHandler,
 ) service.OrderApplicationService {
