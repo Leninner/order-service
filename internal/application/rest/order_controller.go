@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/leninner/order-service/internal/domain/application-service/dto/create"
+	"github.com/leninner/order-service/internal/domain/application-service/dto/track"
 	"github.com/leninner/order-service/internal/domain/application-service/ports/input/service"
 	"github.com/leninner/shared/exception"
 	utils "github.com/leninner/shared/utils"
@@ -76,4 +77,31 @@ func (c *OrderController) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"order": createOrderResponse}, nil)
+}
+
+func (c *OrderController) TrackOrder(w http.ResponseWriter, r *http.Request) {
+	orderTrackingID, err := utils.ReadUUIDParamByName(r, "orderTrackingId")
+	if err != nil {
+		exception.BadRequestResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+
+	query := &track.TrackOrderQuery{
+		OrderTrackingID: orderTrackingID,
+	}
+
+	if track.ValidateTrackOrderQuery(v, query); !v.Valid() {
+		exception.FailedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	trackOrderResponse, err := c.orderService.TrackOrder(*query)
+	if err != nil {
+		exception.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"trackOrderResponse": trackOrderResponse}, nil)
 }

@@ -59,6 +59,7 @@ func Routes(app *config.Application) http.Handler {
 	orderController := rest.NewOrderController(orderApplicationService)
 
 	router.HandlerFunc(http.MethodPost, "/v1/orders", orderController.CreateOrder)
+	router.HandlerFunc(http.MethodGet, "/v1/orders/:orderTrackingId", orderController.TrackOrder)
 
 	return middleware.RecoverPanic(router)
 }
